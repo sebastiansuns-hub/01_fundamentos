@@ -1,121 +1,186 @@
-
-  { nombre: "Ana", nota: 4.5, programa: "ADSO" },
-  { nombre: "Luis", nota: 2.8, programa: "ADSO" },
-  { nombre: "Marta", nota: 3.7, programa: "Diseño Web" },
-  { nombre: "Pedro", nota: 1.9, programa: "ADSO" },
-  { nombre: "Sofía", nota: 5.0, programa: "Diseño Web" }
+const productos = [
+ { id: 1, nombre: "Mouse", categoria: "Periférico", precio: 50000, stock: 10, ventas: 12 },
+ { id: 2, nombre: "Teclado", categoria: "Periférico", precio: 120000, stock: 5, ventas: 7 },
+ { id: 3, nombre: "Monitor", categoria: "Pantalla", precio: 800000, stock: 2, ventas: 4 },
+ { id: 4, nombre: "USB", categoria: "Accesorio", precio: 30000, stock: 0, ventas: 15 },
+ { id: 5, nombre: "Diadema", categoria: "Audio", precio: 90000, stock: 8, ventas: 6 }
 ];
 
-function preguntar(texto) {
-  return new Promise(resolve => rl.question(texto, resolve));
+
+
+
+function mostrarProductos() {
+  console.log("\n Lista de productos:");
+  productos.forEach(p => {
+    console.log(`${p.nombre} | $${p.precio} | Stock: ${p.stock} | Ventas: ${p.ventas}`);
+  });
 }
 
-// ==================== FUNCIONES ====================
-async function mostrarTodos() {
-  console.log("\n Todos los aprendices:");
-  aprendices.forEach(a => console.log(`   ${a.nombre} | Nota: ${a.nota} | ${a.programa}`));
+function verStockBajo() {
+  const bajos = productos.filter(p => p.stock < 5);
+  console.log("\n Stock bajo:");
+  bajos.forEach(p => console.log(p.nombre, p.stock));
 }
 
-async function mostrarAprobados() {
-  const aprobados = aprendices.filter(a => a.nota >= 3.0);
-  console.log("\n Aprobados:");
-  aprobados.length ? aprobados.forEach(a => console.log(`   ${a.nombre} - ${a.nota}`)) : console.log("   Ninguno");
+
+function verAgotados() {
+  const agotados = productos.filter(p => p.stock === 0);
+  console.log("\n Agotados:");
+  agotados.forEach(p => console.log(p.nombre));
 }
 
-async function mostrarReprobados() {
-  const reprobados = aprendices.filter(a => a.nota < 3.0);
-  console.log("\n Reprobados:");
-  reprobados.length ? reprobados.forEach(a => console.log(`   ${a.nombre} - ${a.nota}`)) : console.log("   Ninguno");
+
+function listaNombrePrecio() {
+  const lista = productos.map(p => `${p.nombre} - $${p.precio}`);
+  console.log("\n Lista:");
+  console.log(lista);
 }
 
-async function nombresMayusculas() {
-  const nombres = aprendices.map(a => a.nombre.toUpperCase());
-  console.log("\n Nombres en mayúsculas (map):");
-  console.log(nombres);
+
+function valorInventario() {
+  const total = productos.reduce((acc, p) => acc + (p.precio * p.stock), 0);
+  console.log("\n Valor inventario:", total);
 }
 
-async function calcularPromedio() {
-  const suma = aprendices.reduce((acc, a) => acc + a.nota, 0);
-  console.log(`\n Promedio general: ${(suma / aprendices.length).toFixed(2)}`);
+
+function totalVentas() {
+  const total = productos.reduce((acc, p) => acc + p.ventas, 0);
+  console.log("\n Total ventas:", total);
 }
 
-async function ordenarPorNota() {
-  const ordenados = [...aprendices].sort((a, b) => b.nota - a.nota);
-  console.log("\n Ordenados por nota (desc):");
-  ordenados.forEach(a => console.log(`   ${a.nombre} → ${a.nota}`));
+
+function ordenarPorPrecio() {
+  const orden = [...productos].sort((a, b) => b.precio - a.precio);
+  console.log("\n Orden por precio:");
+  orden.forEach(p => console.log(p.nombre, p.precio));
 }
 
-async function clasificarNota() {
-  const notaStr = await preguntar("Ingresa una nota para clasificar: ");
-  const nota = parseFloat(notaStr);
-  if (isNaN(nota)) return console.log(" Nota inválida");
+function ordenarPorVentas() {
+  const orden = [...productos].sort((a, b) => b.ventas - a.ventas);
+  console.log("\n Orden por ventas:");
+  orden.forEach(p => console.log(p.nombre, p.ventas));
+}
 
-  let clasif;
+
+function buscarProducto(nombre) {
+  const prod = productos.find(p => p.nombre.toLowerCase() === nombre.toLowerCase());
+  console.log(prod ? prod : " No encontrado");
+}
+
+
+function validarEstado() {
+  const hayAgotados = productos.some(p => p.stock === 0);
+  const todosStock = productos.every(p => p.stock > 0);
+
+  console.log("\n Hay agotados:", hayAgotados);
+  console.log("Todos tienen stock:", todosStock);
+}
+
+
+function clasificarPrecio(precio) {
+  let categoria;
+
   switch (true) {
-    case (nota >= 1 && nota < 3): clasif = "Bajo"; break;
-    case (nota >= 3 && nota < 4): clasif = "Básico"; break;
-    case (nota >= 4 && nota < 5): clasif = "Alto"; break;
-    case (nota === 5): clasif = "Superior"; break;
-    default: clasif = "Fuera de rango";
+    case (precio < 50000):
+      categoria = "Económico";
+      break;
+    case (precio < 200000):
+      categoria = "Medio";
+      break;
+    case (precio < 700000):
+      categoria = "Alto";
+      break;
+    default:
+      categoria = "Premium";
   }
-  console.log(` Nota ${nota} → ${clasif}`);
+
+  console.log(" Clasificación:", categoria);
 }
 
-async function buscarAprendiz() {
-  const nombre = (await preguntar("Nombre a buscar: ")).toLowerCase();
-  const encontrado = aprendices.find(a => a.nombre.toLowerCase() === nombre);
-  encontrado ? console.log(" Encontrado:", encontrado) : console.log(" No encontrado");
+
+
+
+function disponiblesOrdenados() {
+  const lista = productos
+    .filter(p => p.stock > 0)
+    .sort((a, b) => b.precio - a.precio);
+
+  console.log("\n Disponibles ordenados:");
+  lista.forEach(p => console.log(p.nombre, p.precio));
 }
 
-async function hayReprobados() {
-  console.log(aprendices.some(a => a.nota < 3) ? " Sí hay reprobados" : " No hay reprobados");
+
+function mensajesReabastecimiento() {
+  const mensajes = productos
+    .filter(p => p.stock === 0)
+    .map(p => `Reabastecer ${p.nombre}`);
+
+  console.log("\n Reabastecimiento:");
+  console.log(mensajes);
 }
 
-async function todosAprobaron() {
-  console.log(aprendices.every(a => a.nota >= 3) ? " Todos aprobaron" : " No todos aprobaron");
+
+function reporteFinal() {
+  const masCaro = [...productos].sort((a,b)=>b.precio-a.precio)[0];
+  const masBarato = [...productos].sort((a,b)=>a.precio-b.precio)[0];
+  const masVendido = [...productos].sort((a,b)=>b.ventas-a.ventas)[0];
+  const totalInventario = productos.reduce((acc,p)=>acc+(p.precio*p.stock),0);
+  const totalVendidas = productos.reduce((acc,p)=>acc+p.ventas,0);
+  const agotados = productos.filter(p=>p.stock===0).length;
+
+  console.log("\n ===== REPORTE FINAL =====");
+  console.log("Más caro:", masCaro.nombre);
+  console.log("Más barato:", masBarato.nombre);
+  console.log("Más vendido:", masVendido.nombre);
+  console.log("Inventario total:", totalInventario);
+  console.log("Unidades vendidas:", totalVendidas);
+  console.log("Productos agotados:", agotados);
 }
 
-// ==================== MENÚ ====================
-async function menu() {
-  console.log("\n Proyecto 1 cargado - Nivel básico\n");
 
-  while (true) {
-    const opcion = await preguntar(`
-GESTIÓN DE NOTAS
-1. Mostrar todos
-2. Aprobados (filter)
-3. Reprobados (filter)
-4. Nombres en mayúsculas (map)
-5. Promedio (reduce)
-6. Ordenar por nota (sort)
-7. Clasificar nota (switch)
-8. Buscar por nombre (find)
-9. ¿Hay reprobados? (some)
-10. ¿Todos aprobaron? (every)
+let opcion;
+
+while (opcion !== 0) {
+  opcion = Number(prompt(`
+1. Ver productos
+2. Stock bajo
+3. Agotados
+4. Lista nombre-precio
+5. Valor inventario
+6. Total ventas
+7. Ordenar por precio
+8. Ordenar por ventas
+9. Buscar producto
+10. Validar estado
+11. Clasificar precio
+12. Disponibles ordenados
+13. Reabastecimiento
+14. Reporte final
 0. Salir
+`));
 
-Elige una opción: `);
-
-    switch (opcion.trim()) {
-      case "1": await mostrarTodos(); break;
-      case "2": await mostrarAprobados(); break;
-      case "3": await mostrarReprobados(); break;
-      case "4": await nombresMayusculas(); break;
-      case "5": await calcularPromedio(); break;
-      case "6": await ordenarPorNota(); break;
-      case "7": await clasificarNota(); break;
-      case "8": await buscarAprendiz(); break;
-      case "9": await hayReprobados(); break;
-      case "10": await todosAprobaron(); break;
-      case "0":
-        console.log("\n Saliendo del sistema...");
-        rl.close();
-        return;
-      default:
-        console.log(" Opción inválida");
-    }
-    console.log("─".repeat(60));   // ←←← Corregido
+  switch (opcion) {
+    case 1: mostrarProductos(); break;
+    case 2: verStockBajo(); break;
+    case 3: verAgotados(); break;
+    case 4: listaNombrePrecio(); break;
+    case 5: valorInventario(); break;
+    case 6: totalVentas(); break;
+    case 7: ordenarPorPrecio(); break;
+    case 8: ordenarPorVentas(); break;
+    case 9:
+      let nombre = prompt("Nombre:");
+      buscarProducto(nombre);
+      break;
+    case 10: validarEstado(); break;
+    case 11:
+      let precio = Number(prompt("Precio:"));
+      clasificarPrecio(precio);
+      break;
+    case 12: disponiblesOrdenados(); break;
+    case 13: mensajesReabastecimiento(); break;
+    case 14: reporteFinal(); break;
+    case 0: console.log(" Saliendo..."); break;
+    default: console.log(" Opción inválida");
   }
 }
-
-menu();
